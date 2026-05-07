@@ -1,6 +1,4 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from "react";
-  import { db } from "@/lib/firebase";
-  import { doc, onSnapshot, setDoc } from "firebase/firestore";
 
   export type Advocate = {
     id: string;
@@ -172,7 +170,34 @@ import React, { createContext, useContext, useState, useCallback, useEffect } fr
     chatbotGreeting: "Namaste! I am the virtual assistant for Vinayak Computers. How can I help you today? You can ask about our advocates, services, office locations, or book a consultation.",
   };
 
-  const DOC_REF = doc(db, "site", "content");
+  const API_URL = import.meta.env.VITE_API_URL || "";
+  const ADMIN_PASSWORD = "Mihir@1863";
+
+  async function fetchFromAPI(): Promise<SiteData | null> {
+    try {
+      const res = await fetch(`${API_URL}/api/site-data`);
+      if (!res.ok) return null;
+      return res.json();
+    } catch {
+      return null;
+    }
+  }
+
+  async function saveToAPI(data: SiteData): Promise<boolean> {
+    try {
+      const res = await fetch(`${API_URL}/api/site-data`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Admin-Password": ADMIN_PASSWORD,
+        },
+        body: JSON.stringify(data),
+      });
+      return res.ok;
+    } catch {
+      return false;
+    }
+  }
 
   type SiteContextType = {
     data: SiteData;
@@ -187,48 +212,41 @@ import React, { createContext, useContext, useState, useCallback, useEffect } fr
     const [data, setData] = useState<SiteData>(DEFAULT_DATA);
     const [loading, setLoading] = useState(true);
 
-    // Real-time listener — page updates instantly whenever Firestore data changes
+    // Load from API on mount — always fresh from database, visible to every visitor
     useEffect(() => {
-      const unsub = onSnapshot(
-        DOC_REF,
-        (snap) => {
-          if (snap.exists()) {
-            const saved = snap.data() as SiteData;
-            setData({
-              ...DEFAULT_DATA,
-              ...saved,
-              services: saved.services?.length ? saved.services : DEFAULT_DATA.services,
-              counterStats: saved.counterStats?.length ? saved.counterStats : DEFAULT_DATA.counterStats,
-              chatbotGreeting: saved.chatbotGreeting || DEFAULT_DATA.chatbotGreeting,
-              aboutHeading: saved.aboutHeading || DEFAULT_DATA.aboutHeading,
-              aboutText1: saved.aboutText1 || DEFAULT_DATA.aboutText1,
-              aboutText2: saved.aboutText2 || DEFAULT_DATA.aboutText2,
-              aboutText3: saved.aboutText3 || DEFAULT_DATA.aboutText3,
-            });
-          }
-          setLoading(false);
-        },
-        (error) => {
-          console.error("Firestore onSnapshot error:", error);
-          setLoading(false);
+      fetchFromAPI().then((saved) => {
+        if (saved) {
+          setData({
+            ...DEFAULT_DATA,
+            ...saved,
+            services: saved.services?.length ? saved.services : DEFAULT_DATA.services,
+            counterStats: saved.counterStats?.length ? saved.counterStats : DEFAULT_DATA.counterStats,
+            chatbotGreeting: saved.chatbotGreeting || DEFAULT_DATA.chatbotGreeting,
+            aboutHeading: saved.aboutHeading || DEFAULT_DATA.aboutHeading,
+            aboutText1: saved.aboutText1 || DEFAULT_DATA.aboutText1,
+            aboutText2: saved.aboutText2 || DEFAULT_DATA.aboutText2,
+            aboutText3: saved.aboutText3 || DEFAULT_DATA.aboutText3,
+          });
         }
-      );
-      return () => unsub();
+        setLoading(false);
+      });
     }, []);
 
-    // Save full document to Firestore — all visitors see changes immediately
+    // Save to database via API — change appears for ALL visitors immediately on next page load
     const updateData = useCallback((newData: Partial<SiteData>) => {
       setData((prev) => {
         const updated = { ...prev, ...newData };
-        setDoc(DOC_REF, updated).catch((err) =>
-          console.error("Firestore setDoc error:", err)
-        );
+        saveToAPI(updated).then((ok) => {
+          if (!ok) console.error("Failed to save site data to server");
+        });
         return updated;
       });
     }, []);
 
     const resetData = useCallback(() => {
-      setDoc(DOC_REF, DEFAULT_DATA).catch(console.error);
+      saveToAPI(DEFAULT_DATA).then((ok) => {
+        if (!ok) console.error("Failed to reset site data on server");
+      });
       setData(DEFAULT_DATA);
     }, []);
 
