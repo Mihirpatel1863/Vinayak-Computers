@@ -107,14 +107,14 @@ export const DEFAULT_DATA: SiteData = {
     },
     {
       id: "advocate",
-      name: "Adv. Jaydeep N Patel",
+      name: "Adv. Jaydip N Patel",
       title: "Advocate",
       experience: "17+ Years Experience",
       specializations: ["Criminal Defense", "Family Law", "Consumer Forum", "Criminal Case", "Corporate Litigation"],
       phone: "+91 95580 21551",
       email: "pateljaydipp111@gmail.com",
       office: "Vinayak Computer, Near Police Station, Lunavada Road, Malpur",
-      about: "Bringing a modern, aggressive, and highly strategic approach to legal practice. Adv. Jaydeep N Patel combines the foundational principles learned from his father with contemporary legal strategies. Highly sought after for complex criminal defense and sensitive family matters.",
+      about: "Bringing a modern, aggressive, and highly strategic approach to legal practice. Adv. Jaydip N Patel combines foundational legal principles with contemporary legal strategies. Highly sought after for complex criminal defense and sensitive family matters.",
       achievements: [
         "Secured acquittals in highly publicized criminal trials",
         "Specializes in out-of-court settlements for complex family disputes",
@@ -164,7 +164,7 @@ export const DEFAULT_DATA: SiteData = {
   testimonials: [
     { id: "t1", quote: "Adv. Ramesh N Patel handled our complex property dispute with unmatched expertise. His courtroom presence is commanding, and the attention to detail is exactly what you would expect from a top-tier law firm.", author: "Vikram S.", role: "Business Owner" },
     { id: "t2", quote: "We were facing a difficult corporate litigation matter. The strategic approach taken by Patel & Associates saved our company substantial time and resources. Highly recommended.", author: "Priya M.", role: "Corporate Director" },
-    { id: "t3", quote: "Adv. Jaydeep N Patel represented me in a family court matter. He was not just a brilliant lawyer but also highly empathetic and accessible throughout the stressful process.", author: "Ananya D.", role: "Client" },
+    { id: "t3", quote: "Adv. Jaydip N Patel represented me in a family court matter. He was not just a brilliant lawyer but also highly empathetic and accessible throughout the stressful process.", author: "Ananya D.", role: "Client" },
     { id: "t4", quote: "The multi-generational expertise truly shows. You get the wisdom of a Senior Advocate combined with the energetic, modern approach of a sharp young mind. Exceptional legal service.", author: "Rajesh K.", role: "Real Estate Developer" },
   ],
   chatbotGreeting: "Namaste! I am the virtual assistant for Vinayak Computers. How can I help you today? You can ask about our advocates, services, office locations, or book a consultation.",
