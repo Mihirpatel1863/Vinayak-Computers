@@ -130,8 +130,8 @@ export const DEFAULT_DATA: SiteData = {
       address: "Vinayak Computer, 2nd Floor, Opp. Green Park Hotel, Marketyad, Meghraj",
       phone: "+91 98794 51711",
       directionsUrl: "https://maps.app.goo.gl/uFSR8EMq4dACJ76S6",
-      lat: 23.4843,
-      lng: 73.0498,
+      lat: 23.4941885,
+      lng: 73.5047428,
     },
     {
       id: "office2",
@@ -139,8 +139,8 @@ export const DEFAULT_DATA: SiteData = {
       address: "Vinayak Computer, Near Police Station, Lunavada Road, Malpur",
       phone: "+91 95580 21551",
       directionsUrl: "https://maps.app.goo.gl/BrdkHsQcXGu6QN1g9",
-      lat: 23.3568,
-      lng: 73.0295,
+      lat: 23.362919,
+      lng: 73.468463,
     },
   ],
   practiceAreas: [
