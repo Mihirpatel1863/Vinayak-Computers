@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { MapPin, Phone, Mail, Send, Navigation, ExternalLink } from "lucide-react";
+import { MapPin, Phone, Mail, Send, Navigation, ExternalLink, MessageCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useSiteData } from "@/context/SiteContext";
 
@@ -9,6 +9,8 @@ export const ContactSection = () => {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeOffice, setActiveOffice] = useState(0);
+
+  const whatsappUrl = `https://wa.me/${data.whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent("Namaste, I would like to book a consultation.")}`;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -155,7 +157,7 @@ export const ContactSection = () => {
                     <label className="text-xs text-muted-foreground uppercase tracking-wider">Phone</label>
                     <input required type="tel"
                       className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-primary/50 transition-colors text-sm"
-                      placeholder="+91 98765 43210" />
+                      placeholder="+91 98794 51711" />
                   </div>
                 </div>
                 <div className="space-y-2">
@@ -170,19 +172,35 @@ export const ContactSection = () => {
                     className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-primary/50 transition-colors resize-none text-sm"
                     placeholder="Briefly describe your legal matter..." />
                 </div>
-                <motion.button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full py-4 bg-primary text-black font-semibold rounded-xl hover:bg-primary/90 transition-all flex items-center justify-center gap-2 group disabled:opacity-70 disabled:cursor-not-allowed"
-                  whileHover={{ scale: 1.01 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  {isSubmitting ? (
-                    <div className="w-5 h-5 border-2 border-black/30 border-t-black rounded-full animate-spin" />
-                  ) : (
-                    <>Book Free Consultation <Send className="w-4 h-4 group-hover:translate-x-1 transition-transform" /></>
-                  )}
-                </motion.button>
+
+                {/* Two action buttons */}
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <motion.button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="flex-1 py-4 bg-primary text-black font-semibold rounded-xl hover:bg-primary/90 transition-all flex items-center justify-center gap-2 group disabled:opacity-70 disabled:cursor-not-allowed"
+                    whileHover={{ scale: 1.01 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    {isSubmitting ? (
+                      <div className="w-5 h-5 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+                    ) : (
+                      <>Send Message <Send className="w-4 h-4 group-hover:translate-x-1 transition-transform" /></>
+                    )}
+                  </motion.button>
+
+                  <motion.a
+                    href={whatsappUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 py-4 border border-[#25D366]/40 text-[#25D366] font-semibold rounded-xl hover:bg-[#25D366]/10 transition-all flex items-center justify-center gap-2"
+                    whileHover={{ scale: 1.01 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <MessageCircle className="w-4 h-4" />
+                    Book via WhatsApp
+                  </motion.a>
+                </div>
               </form>
             </div>
           </motion.div>
