@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   useSiteData, DEFAULT_DATA,
@@ -31,7 +31,7 @@ const tabs = [
 ];
 
 export default function Admin() {
-  const { data, updateData, resetData } = useSiteData();
+  const { data, updateData, resetData, loading } = useSiteData();
   const { toast } = useToast();
   const [authed, setAuthed] = useState(false);
   const [pw, setPw] = useState("");
@@ -39,6 +39,11 @@ export default function Admin() {
   const [activeTab, setActiveTab] = useState("firm");
   const [localData, setLocalData] = useState(data);
   const photoRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+  // Sync localData once Firebase finishes loading real data from Firestore
+  useEffect(() => {
+    if (!loading) setLocalData(data);
+  }, [loading]);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
