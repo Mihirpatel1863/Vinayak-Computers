@@ -1,7 +1,7 @@
 {
-  "buildCommand": "pnpm install && pnpm vite build --config vite.config.vercel.ts",
+  "installCommand": "npm install -g pnpm@9.15.0 && pnpm install",
+  "buildCommand": "pnpm vite build --config vite.config.vercel.ts",
   "outputDirectory": "dist",
-  "installCommand": "pnpm install",
   "framework": null,
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
