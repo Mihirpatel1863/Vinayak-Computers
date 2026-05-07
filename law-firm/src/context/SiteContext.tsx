@@ -1,4 +1,6 @@
-import React, { createContext, useContext, useState, useCallback } from "react";
+import React, { createContext, useContext, useState, useCallback, useEffect } from "react";
+import { db } from "@/lib/firebase";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 
 export type Advocate = {
   id: string;
@@ -170,53 +172,60 @@ export const DEFAULT_DATA: SiteData = {
   chatbotGreeting: "Namaste! I am the virtual assistant for Vinayak Computers. How can I help you today? You can ask about our advocates, services, office locations, or book a consultation.",
 };
 
+const DOC_REF = doc(db, "site", "content");
+
 type SiteContextType = {
   data: SiteData;
   updateData: (newData: Partial<SiteData>) => void;
   resetData: () => void;
+  loading: boolean;
 };
 
 const SiteContext = createContext<SiteContextType | null>(null);
-const STORAGE_KEY = "vinayak_site_data_v3";
 
 export const SiteProvider = ({ children }: { children: React.ReactNode }) => {
-  const [data, setData] = useState<SiteData>(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        return {
-          ...DEFAULT_DATA,
-          ...parsed,
-          // Defensive fallbacks for new fields that may not exist in old saved data
-          services: parsed.services?.length ? parsed.services : DEFAULT_DATA.services,
-          counterStats: parsed.counterStats?.length ? parsed.counterStats : DEFAULT_DATA.counterStats,
-          chatbotGreeting: parsed.chatbotGreeting || DEFAULT_DATA.chatbotGreeting,
-          aboutHeading: parsed.aboutHeading || DEFAULT_DATA.aboutHeading,
-          aboutText1: parsed.aboutText1 || DEFAULT_DATA.aboutText1,
-          aboutText2: parsed.aboutText2 || DEFAULT_DATA.aboutText2,
-          aboutText3: parsed.aboutText3 || DEFAULT_DATA.aboutText3,
-        };
-      }
-    } catch {}
-    return DEFAULT_DATA;
-  });
+  const [data, setData] = useState<SiteData>(DEFAULT_DATA);
+  const [loading, setLoading] = useState(true);
 
+  // Load data from Firestore on mount — visible to every visitor worldwide
+  useEffect(() => {
+    getDoc(DOC_REF)
+      .then((snap) => {
+        if (snap.exists()) {
+          const saved = snap.data() as SiteData;
+          setData({
+            ...DEFAULT_DATA,
+            ...saved,
+            services: saved.services?.length ? saved.services : DEFAULT_DATA.services,
+            counterStats: saved.counterStats?.length ? saved.counterStats : DEFAULT_DATA.counterStats,
+            chatbotGreeting: saved.chatbotGreeting || DEFAULT_DATA.chatbotGreeting,
+            aboutHeading: saved.aboutHeading || DEFAULT_DATA.aboutHeading,
+            aboutText1: saved.aboutText1 || DEFAULT_DATA.aboutText1,
+            aboutText2: saved.aboutText2 || DEFAULT_DATA.aboutText2,
+            aboutText3: saved.aboutText3 || DEFAULT_DATA.aboutText3,
+          });
+        }
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, []);
+
+  // Save to Firestore — changes are immediately visible to all visitors
   const updateData = useCallback((newData: Partial<SiteData>) => {
     setData((prev) => {
       const updated = { ...prev, ...newData };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+      setDoc(DOC_REF, updated).catch(console.error);
       return updated;
     });
   }, []);
 
   const resetData = useCallback(() => {
-    localStorage.removeItem(STORAGE_KEY);
+    setDoc(DOC_REF, DEFAULT_DATA).catch(console.error);
     setData(DEFAULT_DATA);
   }, []);
 
   return (
-    <SiteContext.Provider value={{ data, updateData, resetData }}>
+    <SiteContext.Provider value={{ data, updateData, resetData, loading }}>
       {children}
     </SiteContext.Provider>
   );
